@@ -9,13 +9,13 @@
 //http://nbremer.blogspot.nl/2013/09/making-d3-radar-chart-look-bit-better.html
 
 var cfg = {
-    radius: 3,
-    w: 600,
-    h: 600,
+    radius: 4,
+    w: 920,
+    h: 720,
     factor: 1,
     factorLegend: .92,
     levels: 5,
-    maxValue: 1,
+    maxValue: 10,
     radians: 2 * Math.PI,
     opacityArea: 0.5,
     ToRight: 5,
@@ -26,26 +26,10 @@ var cfg = {
     color: d3.scale.category10()
 };
 
+var Format = d3.format(',');
+
 var RadarChart = {
     draw: function(id, d, options){
-
-        // var cfg = {
-        //     radius: 3,
-        //     w: 600,
-        //     h: 600,
-        //     factor: 1,
-        //     factorLegend: .92,
-        //     levels: 3,
-        //     maxValue: 0,
-        //     radians: 2 * Math.PI,
-        //     opacityArea: 0.5,
-        //     ToRight: 5,
-        //     TranslateX: 80,
-        //     TranslateY: 30,
-        //     ExtraWidthX: 100,
-        //     ExtraWidthY: 100,
-        //     color: d3.scale.category10()
-        // };
 
         if('undefined' !== typeof options){
             for(var i in options){
@@ -56,10 +40,8 @@ var RadarChart = {
         }
         cfg.maxValue = Math.max(cfg.maxValue, d3.max(d, function(i){ return 2*d3.max(i.map(function(o){return o.value;}))}));
         var allAxis = (d[0].map(function(i, j){return i.axis}));
-        console.log(allAxis);
         var total = allAxis.length;
         var radius = cfg.factor*Math.min(cfg.w/2, cfg.h/2);
-        var Format = d3.format('%');
         d3.select(id).select("svg").remove();
 
         var g = d3.select(id)
@@ -75,7 +57,6 @@ var RadarChart = {
         //Circular segments
         for(var j=0; j<cfg.levels-1; j++){
             var levelFactor = cfg.factor*radius*((j+1)/cfg.levels);
-            // console.log("level factor is..." + levelFactor.toString())
             g.selectAll(".levels")
                 .data(allAxis)
                 .enter()
@@ -98,8 +79,8 @@ var RadarChart = {
                 .data([1]) //dummy data
                 .enter()
                 .append("svg:text")
-                .attr("x", function(d){return levelFactor*(1-cfg.factor*Math.sin(0));})
-                .attr("y", function(d){return levelFactor*(1-cfg.factor*Math.cos(0));})
+                .attr("x", function(){return levelFactor*(1-cfg.factor*Math.sin(0));})
+                .attr("y", function(){return levelFactor*(1-cfg.factor*Math.cos(0));})
                 .attr("class", "legend work")
                 .style("font-family", "sans-serif")
                 .style("font-size", "10px")
@@ -107,7 +88,6 @@ var RadarChart = {
                 .attr("fill", "#737373")
                 .transition().duration(2000)
                 .text(Format((j+1)*cfg.maxValue/cfg.levels));
-
         }
 
         series = 0;
@@ -130,10 +110,11 @@ var RadarChart = {
         axis.append("text")
             .attr("class", "legend")
             .text(function(d){return d})
-            .style("font-family", "sans-serif")
+            .style("font-family", "Arial")
             .style("font-size", "11px")
             .attr("text-anchor", "middle")
             .attr("dy", "1.5em")
+            .style("fill", "white")
             .attr("transform", function(d, i){return "translate(0, -10)"})
             .attr("x", function(d, i){return cfg.w/2*(1-cfg.factorLegend*Math.sin(i*cfg.radians/total))-60*Math.sin(i*cfg.radians/total);})
             .attr("y", function(d, i){return cfg.h/2*(1-Math.cos(i*cfg.radians/total))-20*Math.cos(i*cfg.radians/total);});
@@ -181,6 +162,7 @@ var RadarChart = {
                         .transition(200)
                         .style("fill-opacity", cfg.opacityArea);
                 });
+
             series++;
         });
         series=0;
@@ -210,13 +192,6 @@ var RadarChart = {
                     newX =  parseFloat(d3.select(this).attr('cx')) - 10;
                     newY =  parseFloat(d3.select(this).attr('cy')) - 5;
 
-                    tooltip
-                        .attr('x', newX)
-                        .attr('y', newY)
-                        .text(Format(d.value))
-                        .transition(200)
-                        .style('opacity', 1);
-
                     z = "polygon."+d3.select(this).attr("class");
                     g.selectAll("polygon")
                         .transition(200)
@@ -226,9 +201,6 @@ var RadarChart = {
                         .style("fill-opacity", .7);
                 })
                 .on('mouseout', function(){
-                    tooltip
-                        .transition(200)
-                        .style('opacity', 0);
                     g.selectAll("polygon")
                         .transition(200)
                         .style("fill-opacity", cfg.opacityArea);
@@ -238,11 +210,7 @@ var RadarChart = {
 
             series++;
         });
-        //Tooltip
-        tooltip = g.append('text')
-            .style('opacity', 1)
-            .style('font-family', 'sans-serif')
-            .style('font-size', '13px');
+
     },
 
 
@@ -260,8 +228,6 @@ var RadarChart = {
 
         var g = d3.select("svg").select("g");
 
-        var Format = d3.format('%');
-
         var allAxis = (d[0].map(function (i, j) {
             return i.axis
         }));
@@ -275,12 +241,12 @@ var RadarChart = {
                     .data([1]) //dummy data
                     .enter()
                     .append("svg:text")
-                    .attr("x", (w/2 + cfg.toRight))
+                    .attr("x", (w/2 + 6))
                     .attr("y", (h/2 - 30))
-                    .attr("transform", "translate(" + (w/2 + cfg.toRight) + ", " + (h/2-30) + ")scale(0)")
+                    .attr("opacity", 0)
                 text
-                    .transition().duration(1000)
-                    .attr("transform", "scale(23)")
+                    .transition().duration(750)
+                    // .attr("transform", "scale(23)")
                     .attr("x", function (d) {
                         return levelFactor * (1 - cfg.factor * Math.sin(0));
                     })
@@ -292,8 +258,8 @@ var RadarChart = {
                     .style("font-size", "10px")
                     .attr("transform", "translate(" + (cfg.w / 2 - levelFactor + cfg.ToRight) + ", " + (cfg.h / 2 - levelFactor) + ")")
                     .attr("fill", "#737373")
+                    .attr("opacity", 1)
                     .text(Format((j + 1) * cfg.maxValue / cfg.levels));
-
             }
         }
 
@@ -305,9 +271,8 @@ var RadarChart = {
 
         if (cfg.maxValue !== 0 && cfg.maxValue <= val) {
             cfg.maxValue = val * 2; //update value to extend outwards.
-            d3.select("#chart").selectAll('text.work').transition().duration(1000).attr("opacity", 1e-6).attr("transform", "translate(" + (w/2 + cfg.toRight) + ", " + (h/2-30) + ")scale(0)").remove();
+            d3.select("#chart").selectAll('text.work').transition().duration(750).attr("opacity", 0).remove();
             addText();
-            // d3.select("#chart").selectAll('text.work').transition().duration(1000).attr("transform", "translate(" + (w/2 + toRight) + ", " + (h/2-30) + ")").each("end", addText);
 
         }
         series = 0;
@@ -331,7 +296,6 @@ var RadarChart = {
                     for (var pti = 0; pti < d.length; pti++) {
                         str = str + d[pti][0] + "," + d[pti][1] + " ";
                     }
-                    console.log("yes")
                     return str;
                 });
 
@@ -339,75 +303,14 @@ var RadarChart = {
         });
         series = 0;
 
+        // Add points
 
-        // /*handles the nodes. */
-        // d.forEach(function(y, x) {
-        //     g.selectAll(".nodes")
-        //         .data(y
-        //
-        // })
-        // g.selectAll(".radar-chart-series1").each(function(d) { console.log(d) });
-
-
-        /*handles the nodes. */
-        // d.forEach(function(y, x) {
-        //     g.selectAll(".circle_special")
-        //         .data(y).enter()
-        //         .append("circle")
-        //         .attr('r', cfg.radius)
-        //         .attr("class", "circle_special radar-chart-series"+series)
-        //         .style("fill", cfg.color(series)).style("fill-opacity", .9)
-        //         .attr("alt", function(j){return Math.max(j.value, 0)})
-        //         .attr("cx", function(j, i){
-        //             dataValues.push([
-        //                 cfg.w/2*(1-(parseFloat(Math.max(j.value, 0))/cfg.maxValue)*cfg.factor*Math.sin(i*cfg.radians/total)),
-        //                 cfg.h/2*(1-(parseFloat(Math.max(j.value, 0))/cfg.maxValue)*cfg.factor*Math.cos(i*cfg.radians/total))
-        //             ]);
-        //             return cfg.w/2*(1-(Math.max(j.value, 0)/cfg.maxValue)*cfg.factor*Math.sin(i*cfg.radians/total));
-        //         }).attr("cy", function(j, i){
-        //             return cfg.h/2*(1-(Math.max(j.value, 0)/cfg.maxValue)*cfg.factor*Math.cos(i*cfg.radians/total));
-        //         })
-        //         .attr("data-id", function(j){return j.axis})
-        //         .on('mouseover', function (d){
-        //             newX =  parseFloat(d3.select(this).attr('cx')) - 10;
-        //             newY =  parseFloat(d3.select(this).attr('cy')) - 5;
-        //
-        //             tooltip
-        //                 .attr('x', newX)
-        //                 .attr('y', newY)
-        //                 .text(Format(d.value))
-        //                 .transition(200)
-        //                 .style('opacity', 1);
-        //
-        //             z = "polygon."+d3.select(this).attr("class");
-        //             g.selectAll("polygon")
-        //                 .transition(200)
-        //                 .style("fill-opacity", 0.1);
-        //             g.selectAll(z)
-        //                 .transition(200)
-        //                 .style("fill-opacity", .7);
-        //         })
-        //         .on('mouseout', function(){
-        //             tooltip
-        //                 .transition(200)
-        //                 .style('opacity', 0);
-        //             g.selectAll("polygon")
-        //                 .transition(200)
-        //                 .style("fill-opacity", cfg.opacityArea);
-        //         })
-        //         .append("svg:title")
-        //         .text(function(j){return Math.max(j.value, 0)});
-        //
-        //     series++;
-        // })
         d.forEach(function (y, x) {
-            // console.log(d);
 
             g.selectAll(".nodes")
                 .data(y).enter()
 
                 .append("svg:circle")
-                //     .transition().duration(100)
                 .attr('r', cfg.radius)
 
                 .attr("class", "radar-chart-series" + series)
@@ -426,18 +329,11 @@ var RadarChart = {
                     return cfg.h / 2 * (1 - (Math.max(j.value, 0) / cfg.maxValue) * cfg.factor * Math.cos(i * cfg.radians / total));
                 })
                 .attr("data-id", function (j) {
-                    return j.axis
+                    return j.axis;
                 })
                 .on('mouseover', function (d) {
                     newX = parseFloat(d3.select(this).attr('cx')) - 10;
                     newY = parseFloat(d3.select(this).attr('cy')) - 5;
-
-                    tooltip
-                        .attr('x', newX)
-                        .attr('y', newY)
-                        .text(Format(d.value))
-                        .transition(200)
-                        .style('opacity', 1);
 
                     z = "polygon." + d3.select(this).attr("class");
                     g.selectAll("polygon")
@@ -448,9 +344,7 @@ var RadarChart = {
                         .style("fill-opacity", .7);
                 })
                 .on('mouseout', function () {
-                    tooltip
-                        .transition(200)
-                        .style('opacity', 0);
+
                     g.selectAll("polygon")
                         .transition(200)
                         .style("fill-opacity", cfg.opacityArea);
@@ -462,8 +356,7 @@ var RadarChart = {
 
             series++;
         });
-        //
-        // console.log(d[1]);
+
     }
 
 };
