@@ -5,9 +5,9 @@ var colorscale = d3.scale.category10();
 
 //Legend titles
 
-var LegendOptions = ['en.wikipedia.org', 'commons.wikimedia.org', 'www.wikidata.org']; //'fr.wikipedia.org', 'de.wikipedia.org'];
+// var LegendOptions = ['en.wikipedia.org', 'commons.wikimedia.org', 'www.wikidata.org']; //'fr.wikipedia.org', 'de.wikipedia.org'];
 
-
+var LegendOptions = ['en.wikipedia.org', 'de.wikipedia.org', 'fr.wikipedia.org']
 //Options for the Radar chart, other than default
 var mycfg = {
     w: w,
@@ -87,16 +87,25 @@ var title = svg.append("text")
     .attr("y", h/20)
     .attr("font-size", "20px")
     .attr("fill", "#d3d3d3")
-    .text("Geometries of different wikis, created");
+    .text("Geometries of different Wikipedia");
 
 var title2 = svg.append("text")
     .attr("class", "header")
     .attr("transform", "translate(90,0)")
-    .attr("x", 5)
-    .attr("y", h/12)
+    .attr("x", -30)
+    .attr("y", h/20+20)
     .attr("font-size", "20px")
     .attr("fill", "#d3d3d3")
-    .text(" by user (non-bot) behavior")
+    .text("language editions, created");
+
+var title3 = svg.append("text")
+    .attr("class", "header")
+    .attr("transform", "translate(90,0)")
+    .attr("x", 58)
+    .attr("y", h/20+40)
+    .attr("font-size", "20px")
+    .attr("fill", "#d3d3d3")
+    .text(" by user behavior")
 
 var url = 'https://stream.wikimedia.org/v2/stream/recentchange';
 var eventSource = new EventSource(url);
