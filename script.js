@@ -1,5 +1,5 @@
-var w = 600,
-    h = 600;
+var w = 550,
+    h = 550;
 
 var colorscale = d3.scale.category10();
 
@@ -47,7 +47,7 @@ var text = svg.append("text")
     .attr("x", w - 70)
     .attr("y", 10)
     .attr("font-size", "12px")
-    .attr("fill", "#404040")
+    .attr("fill", "white")
     .text("Wikis");
 
 //Initiate Legend	
@@ -83,7 +83,7 @@ legend.selectAll('text')
 var title = svg.append("text")
     .attr("class", "header")
     .attr('transform', 'translate(90,0)')
-    .attr("x", -80)
+    .attr("x", -90)
     .attr("y", h/20)
     .attr("font-size", "20px")
     .attr("fill", "#d3d3d3")
@@ -92,7 +92,7 @@ var title = svg.append("text")
 var title2 = svg.append("text")
     .attr("class", "header")
     .attr("transform", "translate(90,0)")
-    .attr("x", 0)
+    .attr("x", 5)
     .attr("y", h/12)
     .attr("font-size", "20px")
     .attr("fill", "#d3d3d3")
